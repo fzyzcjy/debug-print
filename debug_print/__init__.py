@@ -35,16 +35,21 @@ class _DebugPrinter:
         }
         self._pending_copy_tasks: List[_CopyTask] = []
 
+    def post_initialize(self):
+        for copy_task in self._pending_copy_tasks:
+            copy_task.execute()
+        self._pending_copy_tasks.clear()
+
     def __call__(self, x: torch.Tensor, name: str = "", print_ptr: bool = False):
-        name_buffer_gpu = self._compute_name_buffer_gpu(name=name)
+        name_buffer_gpu = self._compute_name_buffer_gpu(name=name, device_index=x.device.index)
         _print_tensor_kernel(x, name_buffer_gpu, print_ptr)
 
-    def _compute_name_buffer_gpu(self, name: str):
+    def _compute_name_buffer_gpu(self, name: str, device_index: int):
         if len(name) == 0:
             return None
 
         name_bytes = name.encode("utf-8")
-        name_buffer_gpu = self._buffers[x.device.index].allocate(len(name_bytes) + 1)
+        name_buffer_gpu = self._buffers[device_index].allocate(len(name_bytes) + 1)
         name_cpu = torch.tensor(list(name_bytes) + [0], dtype=torch.uint8, device="cpu")
         copy_task = _CopyTask(src=name_cpu, dst=name_buffer_gpu)
 
@@ -52,6 +57,8 @@ class _DebugPrinter:
             self._pending_copy_tasks.append(copy_task)
         else:
             copy_task.execute()
+
+        return name_buffer_gpu
 
 
 _printer: Optional[_DebugPrinter] = None
@@ -61,6 +68,10 @@ def initialize():
     global _printer
     assert _printer is None
     _printer = _DebugPrinter()
+
+
+def post_initialize():
+    _printer.post_initialize()
 
 
 def print_tensor(x: torch.Tensor, name: str = "", print_ptr: bool = False):
