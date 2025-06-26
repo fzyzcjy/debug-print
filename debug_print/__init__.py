@@ -1,4 +1,4 @@
-from typing import Dict
+from typing import Dict, Optional
 
 import torch
 from ._kernels import print_tensor as print_tensor_kernel
@@ -31,5 +31,14 @@ class _DebugPrinter:
             name_buffer.copy_(TODO)
 
 
-def print_tensor(x: torch.Tensor, print_ptr: bool = False):
-    print_tensor_kernel(x, print_ptr)
+_printer: Optional[_DebugPrinter] = None
+
+
+def initialize():
+    global _printer
+    assert _printer is None
+    _printer = _DebugPrinter()
+
+
+def print_tensor(x: torch.Tensor, name: str = "", print_ptr: bool = False):
+    _printer(x=x, name=name, print_ptr=print_ptr)
