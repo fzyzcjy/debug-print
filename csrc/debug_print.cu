@@ -18,7 +18,7 @@
 template <typename float_t>
 __global__ void PrintFloatTensor1D(float_t *__restrict__ x,
                                    const size_t stride_0, const size_t n,
-                                   const bool print_ptr) {
+                                   const char* name_ptr, const int name_len, const bool print_ptr) {
   if (print_ptr) {
     printf("addr: %lld\n", x);
   }
@@ -30,7 +30,7 @@ __global__ void PrintFloatTensor1D(float_t *__restrict__ x,
 
 template <typename int_t>
 __global__ void PrintIntTensor1D(int_t *__restrict__ x, const size_t stride_0,
-                                 const size_t n, const bool print_ptr) {
+                                 const size_t n, const char* name_ptr, const int name_len, const bool print_ptr) {
   if (print_ptr) {
     printf("addr: %lld\n", x);
   }
@@ -44,7 +44,7 @@ template <typename float_t>
 __global__ void PrintFloatTensor2D(float_t *__restrict__ x,
                                    const size_t shape_0, const size_t stride_1,
                                    const size_t stride_0, const size_t n,
-                                   const bool print_ptr) {
+                                   const char* name_ptr, const int name_len, const bool print_ptr) {
   if (print_ptr) {
     printf("addr: %lld\n", x);
   }
@@ -58,7 +58,7 @@ __global__ void PrintFloatTensor2D(float_t *__restrict__ x,
 template <typename int_t>
 __global__ void PrintIntTensor2D(int_t *__restrict__ x, const size_t shape_0,
                                  const size_t stride_1, const size_t stride_0,
-                                 const size_t n, const bool print_ptr) {
+                                 const size_t n, const char* name_ptr, const int name_len, const bool print_ptr) {
   if (print_ptr) {
     printf("addr: %lld\n", x);
   }
@@ -74,7 +74,7 @@ __global__ void PrintFloatTensor3D(float_t *__restrict__ x,
                                    const size_t shape_1, const size_t shape_0,
                                    const size_t stride_2, const size_t stride_1,
                                    const size_t stride_0, const size_t n,
-                                   const bool print_ptr) {
+                                   const char* name_ptr, const int name_len, const bool print_ptr) {
   if (print_ptr) {
     printf("addr: %lld\n", x);
   }
@@ -90,7 +90,7 @@ template <typename int_t>
 __global__ void PrintIntTensor3D(int_t *__restrict__ x, const size_t shape_1,
                                  const size_t shape_0, const size_t stride_2,
                                  const size_t stride_1, const size_t stride_0,
-                                 const size_t n, const bool print_ptr) {
+                                 const size_t n, const char* name_ptr, const int name_len, const bool print_ptr) {
   if (print_ptr) {
     printf("addr: %lld\n", x);
   }
