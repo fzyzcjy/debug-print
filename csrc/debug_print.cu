@@ -15,7 +15,7 @@
       TYPE, NAME,                                                              \
       AT_DISPATCH_CASE_FLOATING_AND_REDUCED_FLOATING_TYPES(__VA_ARGS__))
 
-__device__ void PrintCommon(void* x, const char* name_ptr, const bool print_ptr, const bool print_shape) {
+__device__ void PrintCommon(void* x, const char* name_ptr, const bool print_ptr) {
   if (name_ptr != nullptr) {
     printf("name: %s\n", name_ptr);
   }
