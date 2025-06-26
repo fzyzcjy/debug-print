@@ -15,13 +15,17 @@
       TYPE, NAME,                                                              \
       AT_DISPATCH_CASE_FLOATING_AND_REDUCED_FLOATING_TYPES(__VA_ARGS__))
 
+__device__ void PrintCommon(void* x, const char* name_ptr, const int name_len, const bool print_ptr) {
+  if (print_ptr) {
+    printf("addr: %lld\n", x);
+  }
+}
+
 template <typename float_t>
 __global__ void PrintFloatTensor1D(float_t *__restrict__ x,
                                    const size_t stride_0, const size_t n,
                                    const char* name_ptr, const int name_len, const bool print_ptr) {
-  if (print_ptr) {
-    printf("addr: %lld\n", x);
-  }
+  PrintCommon(x, name_ptr, name_len, print_ptr);
   for (size_t i = 0; i < n; ++i) {
     printf("%.4f, ", float(x[i * stride_0]));
   }
@@ -31,9 +35,7 @@ __global__ void PrintFloatTensor1D(float_t *__restrict__ x,
 template <typename int_t>
 __global__ void PrintIntTensor1D(int_t *__restrict__ x, const size_t stride_0,
                                  const size_t n, const char* name_ptr, const int name_len, const bool print_ptr) {
-  if (print_ptr) {
-    printf("addr: %lld\n", x);
-  }
+  PrintCommon(x, name_ptr, name_len, print_ptr);
   for (size_t i = 0; i < n; ++i) {
     printf("%lld, ", int64_t(x[i * stride_0]));
   }
@@ -45,9 +47,7 @@ __global__ void PrintFloatTensor2D(float_t *__restrict__ x,
                                    const size_t shape_0, const size_t stride_1,
                                    const size_t stride_0, const size_t n,
                                    const char* name_ptr, const int name_len, const bool print_ptr) {
-  if (print_ptr) {
-    printf("addr: %lld\n", x);
-  }
+  PrintCommon(x, name_ptr, name_len, print_ptr);
   for (size_t i = 0; i < n; ++i) {
     printf("%.4f, ",
            float(x[(i / shape_0) * stride_1 + (i % shape_0) * stride_0]));
@@ -59,9 +59,7 @@ template <typename int_t>
 __global__ void PrintIntTensor2D(int_t *__restrict__ x, const size_t shape_0,
                                  const size_t stride_1, const size_t stride_0,
                                  const size_t n, const char* name_ptr, const int name_len, const bool print_ptr) {
-  if (print_ptr) {
-    printf("addr: %lld\n", x);
-  }
+  PrintCommon(x, name_ptr, name_len, print_ptr);
   for (size_t i = 0; i < n; ++i) {
     printf("%lld, ",
            int64_t(x[(i / shape_0) * stride_1 + (i % shape_0) * stride_0]));
@@ -75,9 +73,7 @@ __global__ void PrintFloatTensor3D(float_t *__restrict__ x,
                                    const size_t stride_2, const size_t stride_1,
                                    const size_t stride_0, const size_t n,
                                    const char* name_ptr, const int name_len, const bool print_ptr) {
-  if (print_ptr) {
-    printf("addr: %lld\n", x);
-  }
+  PrintCommon(x, name_ptr, name_len, print_ptr);
   for (size_t i = 0; i < n; ++i) {
     printf("%.4f, ", float(x[(i / shape_0 / shape_1) * stride_2 +
                              ((i / shape_0) % shape_1) * stride_1 +
@@ -91,9 +87,7 @@ __global__ void PrintIntTensor3D(int_t *__restrict__ x, const size_t shape_1,
                                  const size_t shape_0, const size_t stride_2,
                                  const size_t stride_1, const size_t stride_0,
                                  const size_t n, const char* name_ptr, const int name_len, const bool print_ptr) {
-  if (print_ptr) {
-    printf("addr: %lld\n", x);
-  }
+  PrintCommon(x, name_ptr, name_len, print_ptr);
   for (size_t i = 0; i < n; ++i) {
     printf("%lld, ", int64_t(x[(i / shape_0 / shape_1) * stride_2 +
                                ((i / shape_0) % shape_1) * stride_1 +
