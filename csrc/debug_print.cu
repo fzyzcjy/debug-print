@@ -46,9 +46,11 @@ __global__ void PrintTensor1D(
   if (print_shape) {
     printf("shape=(%d), stride=(%d)", (int) shape_0, (int) stride_0);
   }
+  printf("[");
   for (size_t index_0 = 0; index_0 < shape_0; ++index_0) {
     PrintElem(x[index_0 * stride_0]);
   }
+  printf("]");
   printf("\n");
 }
 
@@ -63,12 +65,15 @@ __global__ void PrintTensor2D(
   if (print_shape) {
     printf("shape=(%d, %d), stride=(%d, %d)", (int) shape_0, (int) shape_1, (int) stride_0, (int) stride_1);
   }
+  printf("[");
   for (size_t index_0 = 0; index_0 < shape_0; ++index_0) {
+    printf("[");
     for (size_t index_1 = 0; index_1 < shape_1; ++index_1) {
       PrintElem(x[index_0 * stride_0 + index_1 * stride_1]);
     }
-    printf("; ");
+    printf("]");
   }
+  printf("]");
   printf("\n");
 }
 
@@ -83,15 +88,19 @@ __global__ void PrintTensor3D(
   if (print_shape) {
     printf("shape=(%d, %d, %d), stride=(%d, %d, %d)", (int) shape_0, (int) shape_1, (int) shape_2, (int) stride_0, (int) stride_1, (int) stride_2);
   }
+  printf("[");
   for (size_t index_0 = 0; index_0 < shape_0; ++index_0) {
+    printf("[");
     for (size_t index_1 = 0; index_1 < shape_1; ++index_1) {
+      printf("[");
       for (size_t index_2 = 0; index_2 < shape_2; ++index_2) {
         PrintElem(x[index_0 * stride_0 + index_1 * stride_1]);
       }
-      printf("; ");
+      printf("]");
     }
-    printf("; ");
+    printf("]");
   }
+  printf("]");
   printf("\n");
 }
 
