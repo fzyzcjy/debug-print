@@ -1,7 +1,7 @@
 from typing import Dict, Optional
 
 import torch
-from ._kernels import print_tensor as print_tensor_kernel
+from ._kernels import print_tensor as _print_tensor_kernel
 
 
 class _Buffer:
@@ -29,6 +29,9 @@ class _DebugPrinter:
             name_bytes = TODO
             name_buffer = self._buffers[x.device].allocate(len(name_bytes) + 1)
             name_buffer.copy_(TODO)
+        else:
+            name_buffer = None
+        _print_tensor_kernel(x, name_buffer, print_ptr)
 
 
 _printer: Optional[_DebugPrinter] = None
