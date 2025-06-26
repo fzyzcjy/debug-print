@@ -27,8 +27,8 @@ __device__ void PrintCommon(void* x, const char* name_ptr, const bool print_ptr)
 template <typename float_t>
 __global__ void PrintFloatTensor1D(float_t *__restrict__ x,
                                    const size_t stride_0, const size_t n,
-                                   const char* name_ptr, const int name_len, const bool print_ptr) {
-  PrintCommon(x, name_ptr, name_len, print_ptr);
+                                   const char* name_ptr, const bool print_ptr) {
+  PrintCommon(x, name_ptr, print_ptr);
   for (size_t i = 0; i < n; ++i) {
     printf("%.4f, ", float(x[i * stride_0]));
   }
@@ -37,8 +37,8 @@ __global__ void PrintFloatTensor1D(float_t *__restrict__ x,
 
 template <typename int_t>
 __global__ void PrintIntTensor1D(int_t *__restrict__ x, const size_t stride_0,
-                                 const size_t n, const char* name_ptr, const int name_len, const bool print_ptr) {
-  PrintCommon(x, name_ptr, name_len, print_ptr);
+                                 const size_t n, const char* name_ptr, const bool print_ptr) {
+  PrintCommon(x, name_ptr, print_ptr);
   for (size_t i = 0; i < n; ++i) {
     printf("%lld, ", int64_t(x[i * stride_0]));
   }
@@ -49,8 +49,8 @@ template <typename float_t>
 __global__ void PrintFloatTensor2D(float_t *__restrict__ x,
                                    const size_t shape_0, const size_t stride_1,
                                    const size_t stride_0, const size_t n,
-                                   const char* name_ptr, const int name_len, const bool print_ptr) {
-  PrintCommon(x, name_ptr, name_len, print_ptr);
+                                   const char* name_ptr, const bool print_ptr) {
+  PrintCommon(x, name_ptr, print_ptr);
   for (size_t i = 0; i < n; ++i) {
     printf("%.4f, ",
            float(x[(i / shape_0) * stride_1 + (i % shape_0) * stride_0]));
@@ -61,8 +61,8 @@ __global__ void PrintFloatTensor2D(float_t *__restrict__ x,
 template <typename int_t>
 __global__ void PrintIntTensor2D(int_t *__restrict__ x, const size_t shape_0,
                                  const size_t stride_1, const size_t stride_0,
-                                 const size_t n, const char* name_ptr, const int name_len, const bool print_ptr) {
-  PrintCommon(x, name_ptr, name_len, print_ptr);
+                                 const size_t n, const char* name_ptr, const bool print_ptr) {
+  PrintCommon(x, name_ptr, print_ptr);
   for (size_t i = 0; i < n; ++i) {
     printf("%lld, ",
            int64_t(x[(i / shape_0) * stride_1 + (i % shape_0) * stride_0]));
@@ -75,8 +75,8 @@ __global__ void PrintFloatTensor3D(float_t *__restrict__ x,
                                    const size_t shape_1, const size_t shape_0,
                                    const size_t stride_2, const size_t stride_1,
                                    const size_t stride_0, const size_t n,
-                                   const char* name_ptr, const int name_len, const bool print_ptr) {
-  PrintCommon(x, name_ptr, name_len, print_ptr);
+                                   const char* name_ptr, const bool print_ptr) {
+  PrintCommon(x, name_ptr, print_ptr);
   for (size_t i = 0; i < n; ++i) {
     printf("%.4f, ", float(x[(i / shape_0 / shape_1) * stride_2 +
                              ((i / shape_0) % shape_1) * stride_1 +
@@ -89,8 +89,8 @@ template <typename int_t>
 __global__ void PrintIntTensor3D(int_t *__restrict__ x, const size_t shape_1,
                                  const size_t shape_0, const size_t stride_2,
                                  const size_t stride_1, const size_t stride_0,
-                                 const size_t n, const char* name_ptr, const int name_len, const bool print_ptr) {
-  PrintCommon(x, name_ptr, name_len, print_ptr);
+                                 const size_t n, const char* name_ptr, const bool print_ptr) {
+  PrintCommon(x, name_ptr, print_ptr);
   for (size_t i = 0; i < n; ++i) {
     printf("%lld, ", int64_t(x[(i / shape_0 / shape_1) * stride_2 +
                                ((i / shape_0) % shape_1) * stride_1 +
@@ -104,28 +104,27 @@ void PrintTensor(torch::Tensor x, std::optional<torch::Tensor> name_buffer, bool
   TORCH_CHECK(x.is_cuda(), "The input tensor should be a CUDA tensor");
 
   const char* name_ptr = name_buffer.has_value() ? name_buffer->data_ptr() : nullptr;
-  const int name_len = name_buffer.has_value() ? name_buffer->numel() : 0;
 
   if (x.is_floating_point()) {
     if (x.dim() == 1) {
       AT_DISPATCH_FLOATING_AND_REDUCED_FLOATING_TYPES(
           x.scalar_type(), "PrintFloatTensor1D", ([&] {
             PrintFloatTensor1D<<<1, 1, 0, stream>>>(
-                x.data_ptr<scalar_t>(), x.stride(0), x.numel(), name_ptr, name_len, print_ptr);
+                x.data_ptr<scalar_t>(), x.stride(0), x.numel(), name_ptr, print_ptr);
           }));
     } else if (x.dim() == 2) {
       AT_DISPATCH_FLOATING_AND_REDUCED_FLOATING_TYPES(
           x.scalar_type(), "PrintFloatTensor2D", ([&] {
             PrintFloatTensor2D<<<1, 1, 0, stream>>>(
                 x.data_ptr<scalar_t>(), x.size(1), x.stride(0), x.stride(1),
-                x.numel(), name_ptr, name_len, print_ptr);
+                x.numel(), name_ptr, print_ptr);
           }));
     } else if (x.dim() == 3) {
       AT_DISPATCH_FLOATING_AND_REDUCED_FLOATING_TYPES(
           x.scalar_type(), "PrintFloatTensor3D", ([&] {
             PrintFloatTensor3D<<<1, 1, 0, stream>>>(
                 x.data_ptr<scalar_t>(), x.size(1), x.size(2), x.stride(0),
-                x.stride(1), x.stride(2), x.numel(), name_ptr, name_len, print_ptr);
+                x.stride(1), x.stride(2), x.numel(), name_ptr, print_ptr);
           }));
     } else {
       // NOTE(Zihao): I'm just too lazy to do this, codegen for higher
@@ -141,21 +140,21 @@ void PrintTensor(torch::Tensor x, std::optional<torch::Tensor> name_buffer, bool
       AT_DISPATCH_INTEGRAL_TYPES(x.scalar_type(), "PrintIntTensor1D", ([&] {
                                    PrintIntTensor1D<<<1, 1, 0, stream>>>(
                                        x.data_ptr<scalar_t>(), x.stride(0),
-                                       x.numel(), name_ptr, name_len, print_ptr);
+                                       x.numel(), name_ptr, print_ptr);
                                  }));
     } else if (x.dim() == 2) {
       AT_DISPATCH_INTEGRAL_TYPES(x.scalar_type(), "PrintIntTensor2D", ([&] {
                                    PrintIntTensor2D<<<1, 1, 0, stream>>>(
                                        x.data_ptr<scalar_t>(), x.size(1),
                                        x.stride(0), x.stride(1), x.numel(),
-                                       name_ptr, name_len, print_ptr);
+                                       name_ptr, print_ptr);
                                  }));
     } else if (x.dim() == 3) {
       AT_DISPATCH_INTEGRAL_TYPES(x.scalar_type(), "PrintIntTensor3D", ([&] {
                                    PrintIntTensor3D<<<1, 1, 0, stream>>>(
                                        x.data_ptr<scalar_t>(), x.size(1),
                                        x.size(2), x.stride(0), x.stride(1),
-                                       x.stride(2), x.numel(), name_ptr, name_len, print_ptr);
+                                       x.stride(2), x.numel(), name_ptr, print_ptr);
                                  }));
     } else {
       // NOTE(Zihao): I'm just too lazy to do this, codegen for higher
