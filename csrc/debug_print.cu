@@ -101,33 +101,67 @@ void PrintTensor(torch::Tensor x, std::optional<torch::Tensor> name_buffer, bool
 
   const char* name_ptr = name_buffer.has_value() ? reinterpret_cast<char*>(name_buffer->data_ptr<uint8_t>()) : nullptr;
 
-  if (x.dim() == 1) {
-    AT_DISPATCH_FLOATING_AND_REDUCED_FLOATING_TYPES(
-        x.scalar_type(), "PrintFloatTensor1D", ([&] {
-          PrintFloatTensor1D<<<1, 1, 0, stream>>>(
-              x.data_ptr<scalar_t>(), x.stride(0), x.numel(), name_ptr, print_ptr, print_shape);
-        }));
-  } else if (x.dim() == 2) {
-    AT_DISPATCH_FLOATING_AND_REDUCED_FLOATING_TYPES(
-        x.scalar_type(), "PrintFloatTensor2D", ([&] {
-          PrintFloatTensor2D<<<1, 1, 0, stream>>>(
-              x.data_ptr<scalar_t>(), x.size(0), x.size(1), x.stride(0), x.stride(1),
-              x.numel(), name_ptr, print_ptr, print_shape);
-        }));
-  } else if (x.dim() == 3) {
-    AT_DISPATCH_FLOATING_AND_REDUCED_FLOATING_TYPES(
-        x.scalar_type(), "PrintFloatTensor3D", ([&] {
-          PrintFloatTensor3D<<<1, 1, 0, stream>>>(
-              x.data_ptr<scalar_t>(), x.size(0), x.size(1), x.size(2), x.stride(0),
-              x.stride(1), x.stride(2), x.numel(), name_ptr, print_ptr, print_shape);
-        }));
+  if (x.is_floating_point()) {
+    if (x.dim() == 1) {
+      AT_DISPATCH_FLOATING_AND_REDUCED_FLOATING_TYPES(
+          x.scalar_type(), "PrintFloatTensor1D", ([&] {
+            PrintFloatTensor1D<<<1, 1, 0, stream>>>(
+                x.data_ptr<scalar_t>(), x.stride(0), x.numel(), name_ptr, print_ptr, print_shape);
+          }));
+    } else if (x.dim() == 2) {
+      AT_DISPATCH_FLOATING_AND_REDUCED_FLOATING_TYPES(
+          x.scalar_type(), "PrintFloatTensor2D", ([&] {
+            PrintFloatTensor2D<<<1, 1, 0, stream>>>(
+                x.data_ptr<scalar_t>(), x.size(0), x.size(1), x.stride(0), x.stride(1),
+                x.numel(), name_ptr, print_ptr, print_shape);
+          }));
+    } else if (x.dim() == 3) {
+      AT_DISPATCH_FLOATING_AND_REDUCED_FLOATING_TYPES(
+          x.scalar_type(), "PrintFloatTensor3D", ([&] {
+            PrintFloatTensor3D<<<1, 1, 0, stream>>>(
+                x.data_ptr<scalar_t>(), x.size(0), x.size(1), x.size(2), x.stride(0),
+                x.stride(1), x.stride(2), x.numel(), name_ptr, print_ptr, print_shape);
+          }));
+    } else {
+      // NOTE(Zihao): I'm just too lazy to do this, codegen for higher
+      // dimensions should be a better idea
+      TORCH_CHECK(false, "Input dimension not supported.");
+    }
+    cudaError_t status = cudaGetLastError();
+    TORCH_CHECK(status == cudaSuccess,
+                "PrintFloatTensor failed with error " +
+                    std::string(cudaGetErrorString(status)));
   } else {
-    // NOTE(Zihao): I'm just too lazy to do this, codegen for higher
-    // dimensions should be a better idea
-    TORCH_CHECK(false, "Input dimension not supported.");
+    if (x.dim() == 1) {
+      AT_DISPATCH_INTEGRAL_TYPES(x.scalar_type(), "PrintIntTensor1D", ([&] {
+                                   PrintIntTensor1D<<<1, 1, 0, stream>>>(
+                                       x.data_ptr<scalar_t>(), x.stride(0),
+                                       x.numel(), name_ptr, print_ptr, print_shape);
+                                 }));
+    } else if (x.dim() == 2) {
+      AT_DISPATCH_INTEGRAL_TYPES(x.scalar_type(), "PrintIntTensor2D", ([&] {
+                                   PrintIntTensor2D<<<1, 1, 0, stream>>>(
+                                       x.data_ptr<scalar_t>(), x.size(0), x.size(1),
+                                       x.stride(0), x.stride(1), x.numel(),
+                                       name_ptr, print_ptr, print_shape);
+                                 }));
+    } else if (x.dim() == 3) {
+      AT_DISPATCH_INTEGRAL_TYPES(x.scalar_type(), "PrintIntTensor3D", ([&] {
+                                   PrintIntTensor3D<<<1, 1, 0, stream>>>(
+                                       x.data_ptr<scalar_t>(), x.size(0), x.size(1),
+                                       x.size(2), x.stride(0), x.stride(1),
+                                       x.stride(2), x.numel(), name_ptr, print_ptr, print_shape);
+                                 }));
+    } else {
+      // NOTE(Zihao): I'm just too lazy to do this, codegen for higher
+      // dimensions should be a better idea
+      TORCH_CHECK(false, "Input dimension not supported.");
+    }
+    cudaError_t status = cudaGetLastError();
+    TORCH_CHECK(status == cudaSuccess,
+                "PrintIntTensor failed with error " +
+                    std::string(cudaGetErrorString(status)));
   }
-  cudaError_t status = cudaGetLastError();
-  TORCH_CHECK(status == cudaSuccess, "PrintTensor failed with error " + std::string(cudaGetErrorString(status)));
 }
 
 PYBIND11_MODULE(TORCH_EXTENSION_NAME, m) {
