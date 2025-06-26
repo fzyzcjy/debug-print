@@ -48,6 +48,11 @@ class _DebugPrinter:
         name_cpu = torch.tensor(list(name_bytes) + [0], dtype=torch.uint8, device="cpu")
         copy_task = _CopyTask(src=name_cpu, dst=name_buffer_gpu)
 
+        if torch.cuda.is_current_stream_capturing():
+            self._pending_copy_tasks.append(copy_task)
+        else:
+            copy_task.execute()
+
 
 _printer: Optional[_DebugPrinter] = None
 
