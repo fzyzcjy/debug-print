@@ -24,6 +24,9 @@ __device__ void PrintCommon(void* x, const char* name_ptr, const bool print_ptr)
   }
 }
 
+template <typename T>
+struct always_false : std::false_type {};
+
 template <typename scalar_t>
 __device__ void PrintElem(scalar_t value) {
     if constexpr (std::is_floating_point<scalar_t>::value) {
@@ -31,7 +34,7 @@ __device__ void PrintElem(scalar_t value) {
     } else if constexpr (std::is_integral<scalar_t>::value) {
       printf("%lld, ", static_cast<long long>(value));
     } else {
-      static_assert(false, "unsupported scalar_t type");
+        static_assert(always_false<scalar_t>::value, "PrintElem: unsupported scalar_t type");
     }
 }
 
