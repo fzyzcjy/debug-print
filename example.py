@@ -12,15 +12,16 @@ debug_print.print_tensor(x[..., 0])
 debug_print.print_tensor(x[0:1, 1:3, 0:4])
 
 print("demo for all types...")
-debug_print.print_tensor(torch.tensor([3, 4, 5], dtype=torch.int32), name="for int32")
-debug_print.print_tensor(torch.tensor([3, 4, 5], dtype=torch.int64), name="for int64")
-debug_print.print_tensor(torch.tensor([1.5, 2.5, 3.5], dtype=torch.float), name="for float")
+debug_print.print_tensor(torch.tensor([3, 4, 5], dtype=torch.int32, device="cuda:0"), name="for int32")
+debug_print.print_tensor(torch.tensor([3, 4, 5], dtype=torch.int64, device="cuda:0"), name="for int64")
+debug_print.print_tensor(torch.tensor([1.5, 2.5, 3.5], dtype=torch.float, device="cuda:0"), name="for float")
 
 print("demo for all dims...")
-debug_print.print_tensor(torch.tensor([3, 4, 5], dtype=torch.int32), name="for 1D")
-debug_print.print_tensor(torch.tensor([[1, 2, 3], [3, 4, 5]], dtype=torch.int32), name="for 2D")
-debug_print.print_tensor(torch.tensor([[[1, 2, 3], [3, 4, 5]], [[10, 20, 30], [30, 40, 50]]], dtype=torch.int32),
-                         name="for 3D")
+debug_print.print_tensor(torch.tensor([3, 4, 5], dtype=torch.int32, device="cuda:0"), name="for 1D")
+debug_print.print_tensor(torch.tensor([[1, 2, 3], [3, 4, 5]], dtype=torch.int32, device="cuda:0"), name="for 2D")
+debug_print.print_tensor(
+    torch.tensor([[[1, 2, 3], [3, 4, 5]], [[10, 20, 30], [30, 40, 50]]], dtype=torch.int32, device="cuda:0"),
+    name="for 3D")
 
 print("start warmup...")
 s = torch.cuda.Stream()

@@ -41,6 +41,7 @@ class _DebugPrinter:
         self._pending_copy_tasks.clear()
 
     def __call__(self, x: torch.Tensor, name: str, print_ptr: bool, print_shape: bool):
+        assert x.is_cuda, f"{x.device} must be on cuda"
         name_buffer_gpu = self._compute_name_buffer_gpu(name=name, device_index=x.device.index)
         _print_tensor_kernel(x, name_buffer_gpu, print_ptr, print_shape)
 
