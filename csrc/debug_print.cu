@@ -25,11 +25,20 @@ __device__ void PrintCommon(void* x, const char* name_ptr, const bool print_ptr)
 }
 
 template <typename T>
+struct is_my_floating_point : std::is_floating_point<T> {};
+
+template <>
+struct is_my_floating_point<c10::Half> : std::true_type {};
+
+template <>
+struct is_my_floating_point<c10::BFloat16> : std::true_type {};
+
+template <typename T>
 struct always_false : std::false_type {};
 
 template <typename scalar_t>
 __device__ void PrintElem(scalar_t value) {
-    if constexpr (std::is_floating_point<scalar_t>::value) {
+    if constexpr (is_my_floating_point<scalar_t>::value) {
       printf("%.4f, ", float(value));
     } else if constexpr (std::is_integral<scalar_t>::value) {
       printf("%lld, ", static_cast<long long>(value));
