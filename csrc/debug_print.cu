@@ -24,8 +24,19 @@ __device__ void PrintCommon(void* x, const char* name_ptr, const bool print_ptr,
   }
 }
 
+template <typename scalar_t>
+__device__ void PrintElem(scalar_t value) {
+    if constexpr (std::is_floating_point<scalar_t>::value) {
+      printf("%.4f, ", float(x[i * stride_0]));
+    } else if constexpr (std::is_integral<scalar_t>::value) {
+      printf("%lld, ", static_cast<long long>(x[i * stride_0]));
+    } else {
+      printf("?, ");
+    }
+}
+
 template <typename float_t>
-__global__ void PrintFloatTensor1D(float_t *__restrict__ x,
+__global__ void PrintTensor1D(float_t *__restrict__ x,
                                    const size_t stride_0, const size_t n,
                                    const char* name_ptr, const bool print_ptr, const bool print_shape) {
   PrintCommon(x, name_ptr, print_ptr);
@@ -33,20 +44,7 @@ __global__ void PrintFloatTensor1D(float_t *__restrict__ x,
     printf("shape=(%d), stride=(%d)", (int) n, (int) stride_0);
   }
   for (size_t i = 0; i < n; ++i) {
-    printf("%.4f, ", float(x[i * stride_0]));
-  }
-  printf("\n");
-}
-
-template <typename int_t>
-__global__ void PrintIntTensor1D(int_t *__restrict__ x, const size_t stride_0,
-                                 const size_t n, const char* name_ptr, const bool print_ptr, const bool print_shape) {
-  PrintCommon(x, name_ptr, print_ptr);
-  if (print_shape) {
-    printf("shape=(%d), stride=(%d)", (int) n, (int) stride_0);
-  }
-  for (size_t i = 0; i < n; ++i) {
-    printf("%lld, ", int64_t(x[i * stride_0]));
+    PrintElem(x[i * stride_0]);
   }
   printf("\n");
 }
