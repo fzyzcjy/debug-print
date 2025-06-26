@@ -25,6 +25,10 @@ class _DebugPrinter:
         }
 
     def __call__(self, x: torch.Tensor, name: str = "", print_ptr: bool = False):
+        if len(name) > 0:
+            name_bytes = TODO
+            name_buffer = self._buffers[x.device].allocate(len(name_bytes) + 1)
+            name_buffer.copy_(TODO)
 
 
 def print_tensor(x: torch.Tensor, print_ptr: bool = False):
