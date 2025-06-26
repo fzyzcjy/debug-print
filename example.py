@@ -12,16 +12,16 @@ debug_print.print_tensor(x[..., 0])
 debug_print.print_tensor(x[0:1, 1:3, 0:4])
 
 print("demo for all types...")
-debug_print.print_tensor(torch.tensor([3, 4, 5], dtype=torch.int32, device="cuda:0"), name="for int32")
-debug_print.print_tensor(torch.tensor([3, 4, 5], dtype=torch.int64, device="cuda:0"), name="for int64")
-debug_print.print_tensor(torch.tensor([1.5, 2.5, 3.5], dtype=torch.float, device="cuda:0"), name="for float")
+debug_print.print_tensor(torch.tensor([3, 4, 5], dtype=torch.int32, device="cuda:0"), name="for int32", print_shape=True, print_ptr=True)
+debug_print.print_tensor(torch.tensor([3, 4, 5], dtype=torch.int64, device="cuda:0"), name="for int64", print_shape=True, print_ptr=True)
+debug_print.print_tensor(torch.tensor([1.5, 2.5, 3.5], dtype=torch.float, device="cuda:0"), name="for float", print_shape=True, print_ptr=True)
 
 print("demo for all dims...")
-debug_print.print_tensor(torch.tensor([3, 4, 5], dtype=torch.int32, device="cuda:0"), name="for 1D")
-debug_print.print_tensor(torch.tensor([[1, 2, 3], [3, 4, 5]], dtype=torch.int32, device="cuda:0"), name="for 2D")
+debug_print.print_tensor(torch.tensor([3, 4, 5], dtype=torch.int32, device="cuda:0"), name="for 1D", print_shape=True, print_ptr=True)
+debug_print.print_tensor(torch.tensor([[1, 2, 3], [3, 4, 5]], dtype=torch.int32, device="cuda:0"), name="for 2D", print_shape=True, print_ptr=True)
 debug_print.print_tensor(
     torch.tensor([[[1, 2, 3], [3, 4, 5]], [[10, 20, 30], [30, 40, 50]]], dtype=torch.int32, device="cuda:0"),
-    name="for 3D")
+    name="for 3D", print_shape=True, print_ptr=True)
 
 print("start warmup...")
 s = torch.cuda.Stream()
@@ -42,7 +42,7 @@ with torch.cuda.graph(g, stream=s):
     z = x @ y
     debug_print.print_tensor(z)
     z1 = z @ y
-    debug_print.print_tensor(z1[..., 0], name="This is name for part of z1")
+    debug_print.print_tensor(z1[..., 0], name="This is name for part of z1", print_shape=True, print_ptr=True)
     z2 = z1 @ y
     debug_print.print_tensor(z2, name="This is name for z2")
 
