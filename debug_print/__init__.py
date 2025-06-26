@@ -27,13 +27,12 @@ class _CopyTask:
 
 
 class _DebugPrinter:
-    def __init__(self):
+    def __init__(self, device_id: Optional[int]):
+        if device_id is None:
+            device_id = torch.cuda.current_device()
+
         # Can be optimized
-        self._buffers: Dict[int, _Buffer] = {
-            device_index: _Buffer(device_index=device_index)
-            # for device_index in range(torch.cuda.device_count())
-            for device_index in [torch.cuda.current_device()]
-        }
+        self._buffers: Dict[int, _Buffer] = {device_id: _Buffer(device_index=device_id)}
         self._pending_copy_tasks: List[_CopyTask] = []
 
     def post_initialize(self):
@@ -66,12 +65,12 @@ class _DebugPrinter:
 _printer: Optional[_DebugPrinter] = None
 
 
-def initialize():
+def initialize(device_id: int):
     global _printer
     if _printer is not None:
         print("debug_print.initialize skip since already initialized")
         return
-    _printer = _DebugPrinter()
+    _printer = _DebugPrinter(device_id=device_id)
 
 
 def post_initialize():
