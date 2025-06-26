@@ -106,21 +106,28 @@ void PrintTensor(torch::Tensor x, std::optional<torch::Tensor> name_buffer, bool
       AT_DISPATCH_FLOATING_AND_REDUCED_FLOATING_TYPES(
           x.scalar_type(), "PrintTensor1D", ([&] {
             PrintTensor1D<<<1, 1, 0, stream>>>(
-                x.data_ptr<scalar_t>(), x.stride(0), x.numel(), name_ptr, print_ptr, print_shape);
+                x.data_ptr<scalar_t>(),
+                x.size(0), x.stride(0),
+                name_ptr, print_ptr, print_shape
+            );
           }));
     } else if (x.dim() == 2) {
       AT_DISPATCH_FLOATING_AND_REDUCED_FLOATING_TYPES(
           x.scalar_type(), "PrintTensor2D", ([&] {
             PrintTensor2D<<<1, 1, 0, stream>>>(
-                x.data_ptr<scalar_t>(), x.size(0), x.size(1), x.stride(0), x.stride(1),
-                x.numel(), name_ptr, print_ptr, print_shape);
+                x.data_ptr<scalar_t>(),
+                x.size(0), x.size(1), x.stride(0), x.stride(1),
+                name_ptr, print_ptr, print_shape
+            );
           }));
     } else if (x.dim() == 3) {
       AT_DISPATCH_FLOATING_AND_REDUCED_FLOATING_TYPES(
           x.scalar_type(), "PrintTensor3D", ([&] {
             PrintTensor3D<<<1, 1, 0, stream>>>(
-                x.data_ptr<scalar_t>(), x.size(0), x.size(1), x.size(2), x.stride(0),
-                x.stride(1), x.stride(2), x.numel(), name_ptr, print_ptr, print_shape);
+                x.data_ptr<scalar_t>(),
+                x.size(0), x.size(1), x.size(2), x.stride(0), x.stride(1), x.stride(2),
+                name_ptr, print_ptr, print_shape
+            );
           }));
     } else {
       // NOTE(Zihao): I'm just too lazy to do this, codegen for higher
@@ -134,24 +141,28 @@ void PrintTensor(torch::Tensor x, std::optional<torch::Tensor> name_buffer, bool
   } else {
     if (x.dim() == 1) {
       AT_DISPATCH_INTEGRAL_TYPES(x.scalar_type(), "PrintTensor1D", ([&] {
-                                   PrintTensor1D<<<1, 1, 0, stream>>>(
-                                       x.data_ptr<scalar_t>(), x.stride(0),
-                                       x.numel(), name_ptr, print_ptr, print_shape);
-                                 }));
+           PrintTensor1D<<<1, 1, 0, stream>>>(
+                x.data_ptr<scalar_t>(),
+                x.size(0), x.stride(0),
+                name_ptr, print_ptr, print_shape
+            );
+      }));
     } else if (x.dim() == 2) {
       AT_DISPATCH_INTEGRAL_TYPES(x.scalar_type(), "PrintTensor2D", ([&] {
-                                   PrintTensor2D<<<1, 1, 0, stream>>>(
-                                       x.data_ptr<scalar_t>(), x.size(0), x.size(1),
-                                       x.stride(0), x.stride(1), x.numel(),
-                                       name_ptr, print_ptr, print_shape);
-                                 }));
+       PrintTensor2D<<<1, 1, 0, stream>>>(
+                x.data_ptr<scalar_t>(),
+                x.size(0), x.size(1), x.stride(0), x.stride(1),
+                name_ptr, print_ptr, print_shape
+            );
+     }));
     } else if (x.dim() == 3) {
       AT_DISPATCH_INTEGRAL_TYPES(x.scalar_type(), "PrintTensor3D", ([&] {
-                                   PrintTensor3D<<<1, 1, 0, stream>>>(
-                                       x.data_ptr<scalar_t>(), x.size(0), x.size(1),
-                                       x.size(2), x.stride(0), x.stride(1),
-                                       x.stride(2), x.numel(), name_ptr, print_ptr, print_shape);
-                                 }));
+       PrintTensor3D<<<1, 1, 0, stream>>>(
+                x.data_ptr<scalar_t>(),
+                x.size(0), x.size(1), x.size(2), x.stride(0), x.stride(1), x.stride(2),
+                name_ptr, print_ptr, print_shape
+            );
+     }));
     } else {
       // NOTE(Zihao): I'm just too lazy to do this, codegen for higher
       // dimensions should be a better idea
