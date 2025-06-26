@@ -68,7 +68,9 @@ _printer: Optional[_DebugPrinter] = None
 
 def initialize():
     global _printer
-    assert _printer is None
+    if _printer is not None:
+        print("debug_print.initialize skip since already initialized")
+        return
     _printer = _DebugPrinter()
 
 
