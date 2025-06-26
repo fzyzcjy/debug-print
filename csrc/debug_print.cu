@@ -27,9 +27,9 @@ __device__ void PrintCommon(void* x, const char* name_ptr, const bool print_ptr,
 template <typename scalar_t>
 __device__ void PrintElem(scalar_t value) {
     if constexpr (std::is_floating_point<scalar_t>::value) {
-      printf("%.4f, ", float(x[i * stride_0]));
+      printf("%.4f, ", float(value));
     } else if constexpr (std::is_integral<scalar_t>::value) {
-      printf("%lld, ", static_cast<long long>(x[i * stride_0]));
+      printf("%lld, ", static_cast<long long>(value));
     } else {
       printf("?, ");
     }
