@@ -36,15 +36,18 @@ __device__ void PrintElem(scalar_t value) {
 }
 
 template <typename float_t>
-__global__ void PrintTensor1D(float_t *__restrict__ x,
-                                   const size_t stride_0, const size_t n,
-                                   const char* name_ptr, const bool print_ptr, const bool print_shape) {
+__global__ void PrintTensor1D(
+    float_t *__restrict__ x,
+    const size_t shape_0,
+    const size_t stride_0,
+    const char* name_ptr, const bool print_ptr, const bool print_shape
+) {
   PrintCommon(x, name_ptr, print_ptr);
   if (print_shape) {
     printf("shape=(%d), stride=(%d)", (int) n, (int) stride_0);
   }
-  for (size_t i = 0; i < n; ++i) {
-    PrintElem(x[i * stride_0]);
+  for (size_t index_0 = 0; index_0 < shape_0; ++index_0) {
+    PrintElem(x[index_0 * stride_0]);
   }
   printf("\n");
 }
