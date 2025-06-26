@@ -4,6 +4,7 @@ from setuptools import setup
 setup(
     name="debug_print",
     version="0.0.2",
+    packages=['debug_print'],
     ext_modules=[
         CUDAExtension(
             name="debug_print._kernels",
