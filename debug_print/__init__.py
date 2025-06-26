@@ -65,7 +65,7 @@ class _DebugPrinter:
 _printer: Optional[_DebugPrinter] = None
 
 
-def initialize(device_id: int):
+def initialize(device_id: Optional[int] = None):
     global _printer
     if _printer is not None:
         print("debug_print.initialize skip since already initialized")
