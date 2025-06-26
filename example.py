@@ -1,7 +1,6 @@
 import torch
 import debug_print
 
-print(f"{vars(debug_print)=} {dir(debug_print)=}")
 debug_print.initialize()
 
 x = torch.rand(3, 4, 5).to(0)
