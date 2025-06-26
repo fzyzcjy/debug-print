@@ -37,13 +37,12 @@ class _DebugPrinter:
     def __call__(self, x: torch.Tensor, name: str = "", print_ptr: bool = False):
         if len(name) > 0:
             name_bytes = name.encode("utf-8")
-            name_buffer = self._buffers[x.device.index].allocate(len(name_bytes) + 1)
+            name_buffer_gpu = self._buffers[x.device.index].allocate(len(name_bytes) + 1)
             name_cpu = torch.tensor(list(name_bytes) + [0], dtype=torch.uint8, device="cpu")
-            name_cpu = name_cpu.to(name_buffer.device)
-            name_buffer.copy_(name_cpu)
+            copy_task = _CopyTask(src=name_cpu, dst=name_buffer_gpu)
         else:
-            name_buffer = None
-        _print_tensor_kernel(x, name_buffer, print_ptr)
+            name_buffer_gpu = None
+        _print_tensor_kernel(x, name_buffer_gpu, print_ptr)
 
 
 _printer: Optional[_DebugPrinter] = None
