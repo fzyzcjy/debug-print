@@ -71,7 +71,7 @@ __global__ void PrintTensor2D(
     for (size_t index_1 = 0; index_1 < shape_1; ++index_1) {
       PrintElem(x[index_0 * stride_0 + index_1 * stride_1]);
     }
-    printf("]");
+    printf("], ");
   }
   printf("]");
   printf("\n");
@@ -96,9 +96,9 @@ __global__ void PrintTensor3D(
       for (size_t index_2 = 0; index_2 < shape_2; ++index_2) {
         PrintElem(x[index_0 * stride_0 + index_1 * stride_1]);
       }
-      printf("]");
+      printf("], ");
     }
-    printf("]");
+    printf("], ");
   }
   printf("]");
   printf("\n");
