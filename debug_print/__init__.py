@@ -31,7 +31,8 @@ class _DebugPrinter:
         # Can be optimized
         self._buffers: Dict[int, _Buffer] = {
             device_index: _Buffer(device_index=device_index)
-            for device_index in range(torch.cuda.device_count())
+            # for device_index in range(torch.cuda.device_count())
+            for device_index in [torch.cuda.current_device()]
         }
         self._pending_copy_tasks: List[_CopyTask] = []
 
@@ -75,5 +76,5 @@ def post_initialize():
     _printer.post_initialize()
 
 
-def print_tensor(x: torch.Tensor, name: str = "", print_ptr: bool = False, print_shape: bool = False):
+def print_tensor(x: torch.Tensor, name: str = "", print_ptr: bool = True, print_shape: bool = True):
     _printer(x=x, name=name, print_ptr=print_ptr, print_shape=print_shape)
