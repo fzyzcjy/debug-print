@@ -29,6 +29,9 @@ __global__ void PrintFloatTensor1D(float_t *__restrict__ x,
                                    const size_t stride_0, const size_t n,
                                    const char* name_ptr, const bool print_ptr, const bool print_shape) {
   PrintCommon(x, name_ptr, print_ptr);
+  if (print_shape) {
+    printf("shape=(%d), stride=(%d)", (int) n, (int) stride_0);
+  }
   for (size_t i = 0; i < n; ++i) {
     printf("%.4f, ", float(x[i * stride_0]));
   }
@@ -39,6 +42,9 @@ template <typename int_t>
 __global__ void PrintIntTensor1D(int_t *__restrict__ x, const size_t stride_0,
                                  const size_t n, const char* name_ptr, const bool print_ptr, const bool print_shape) {
   PrintCommon(x, name_ptr, print_ptr);
+  if (print_shape) {
+    printf("shape=(%d), stride=(%d)", (int) n, (int) stride_0);
+  }
   for (size_t i = 0; i < n; ++i) {
     printf("%lld, ", int64_t(x[i * stride_0]));
   }
@@ -51,6 +57,9 @@ __global__ void PrintFloatTensor2D(float_t *__restrict__ x,
                                    const size_t stride_0, const size_t n,
                                    const char* name_ptr, const bool print_ptr, const bool print_shape) {
   PrintCommon(x, name_ptr, print_ptr);
+  if (print_shape) {
+    printf("shape=(%d, %d), stride=(%d, %d)", (int) shape_0, , (int) stride_0);
+  }
   for (size_t i = 0; i < n; ++i) {
     printf("%.4f%c ",
            float(x[(i / shape_0) * stride_1 + (i % shape_0) * stride_0]),
@@ -121,14 +130,14 @@ void PrintTensor(torch::Tensor x, std::optional<torch::Tensor> name_buffer, bool
       AT_DISPATCH_FLOATING_AND_REDUCED_FLOATING_TYPES(
           x.scalar_type(), "PrintFloatTensor2D", ([&] {
             PrintFloatTensor2D<<<1, 1, 0, stream>>>(
-                x.data_ptr<scalar_t>(), x.size(1), x.stride(0), x.stride(1),
+                x.data_ptr<scalar_t>(), x.size(0), x.size(1), x.stride(0), x.stride(1),
                 x.numel(), name_ptr, print_ptr, print_shape);
           }));
     } else if (x.dim() == 3) {
       AT_DISPATCH_FLOATING_AND_REDUCED_FLOATING_TYPES(
           x.scalar_type(), "PrintFloatTensor3D", ([&] {
             PrintFloatTensor3D<<<1, 1, 0, stream>>>(
-                x.data_ptr<scalar_t>(), x.size(1), x.size(2), x.stride(0),
+                x.data_ptr<scalar_t>(), x.size(0), x.size(1), x.size(2), x.stride(0),
                 x.stride(1), x.stride(2), x.numel(), name_ptr, print_ptr, print_shape);
           }));
     } else {
@@ -150,14 +159,14 @@ void PrintTensor(torch::Tensor x, std::optional<torch::Tensor> name_buffer, bool
     } else if (x.dim() == 2) {
       AT_DISPATCH_INTEGRAL_TYPES(x.scalar_type(), "PrintIntTensor2D", ([&] {
                                    PrintIntTensor2D<<<1, 1, 0, stream>>>(
-                                       x.data_ptr<scalar_t>(), x.size(1),
+                                       x.data_ptr<scalar_t>(), x.size(0), x.size(1),
                                        x.stride(0), x.stride(1), x.numel(),
                                        name_ptr, print_ptr, print_shape);
                                  }));
     } else if (x.dim() == 3) {
       AT_DISPATCH_INTEGRAL_TYPES(x.scalar_type(), "PrintIntTensor3D", ([&] {
                                    PrintIntTensor3D<<<1, 1, 0, stream>>>(
-                                       x.data_ptr<scalar_t>(), x.size(1),
+                                       x.data_ptr<scalar_t>(), x.size(0), x.size(1),
                                        x.size(2), x.stride(0), x.stride(1),
                                        x.stride(2), x.numel(), name_ptr, print_ptr, print_shape);
                                  }));
