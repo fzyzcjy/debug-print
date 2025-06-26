@@ -3,6 +3,7 @@ import debug_print
 
 debug_print.initialize()
 
+print("demo without cuda graph...")
 x = torch.rand(3, 4, 5).to(0)
 debug_print.print_tensor(x)
 debug_print.print_tensor(x[..., 0:3])
@@ -10,6 +11,7 @@ x = torch.arange(3 * 4 * 5, dtype=torch.int32).view(3, 4, 5).to(0)
 debug_print.print_tensor(x[..., 0])
 debug_print.print_tensor(x[0:1, 1:3, 0:4])
 
+print("start warmup...")
 s = torch.cuda.Stream()
 s.wait_stream(torch.cuda.current_stream())
 x = torch.empty(2, 2).half().to(0)
@@ -21,6 +23,7 @@ with torch.cuda.stream(s):
         z2 = z1 @ y
 
 
+print("start graph capture...")
 g = torch.cuda.CUDAGraph()
 with torch.cuda.graph(g, stream=s):
     debug_print.print_tensor(x)
