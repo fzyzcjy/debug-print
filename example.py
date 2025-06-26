@@ -27,9 +27,9 @@ with torch.cuda.graph(g, stream=s):
     z = x @ y
     debug_print.print_tensor(z)
     z1 = z @ y
-    debug_print.print_tensor(z1[..., 0])
+    debug_print.print_tensor(z1[..., 0], name="This is name for part of z1")
     z2 = z1 @ y
-    debug_print.print_tensor(z2)
+    debug_print.print_tensor(z2, name="This is name for z2")
 
 x.copy_(torch.randn(2, 2))
 y.copy_(torch.ones(2, 2))
