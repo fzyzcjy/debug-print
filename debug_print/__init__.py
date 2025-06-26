@@ -6,7 +6,7 @@ from ._kernels import print_tensor as _print_tensor_kernel
 
 class _Buffer:
     def __init__(self, device_index: int):
-        self._tensor = torch.zeros((10_000_000,), dtype=torch.char, device=f"cuda:{device_index}")
+        self._tensor = torch.zeros((10_000_000,), dtype=torch.uint8, device=f"cuda:{device_index}")
         self._used_len = 0
 
     def allocate(self, size: int):
