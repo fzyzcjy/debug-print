@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 from typing import Dict, Optional
 
 import torch
@@ -16,6 +17,15 @@ class _Buffer:
         return output
 
 
+@dataclass
+class _CopyTask:
+    src: torch.Tensor
+    dst: torch.Tensor
+
+    def execute(self):
+        self.dst.copy_(self.src)
+
+
 class _DebugPrinter:
     def __init__(self):
         # Can be optimized
@@ -28,9 +38,9 @@ class _DebugPrinter:
         if len(name) > 0:
             name_bytes = name.encode("utf-8")
             name_buffer = self._buffers[x.device.index].allocate(len(name_bytes) + 1)
-            tmp = torch.tensor(list(name_bytes) + [0], dtype=torch.uint8, device="cpu")
-            tmp = tmp.to(name_buffer.device)
-            name_buffer.copy_(tmp)
+            name_cpu = torch.tensor(list(name_bytes) + [0], dtype=torch.uint8, device="cpu")
+            name_cpu = name_cpu.to(name_buffer.device)
+            name_buffer.copy_(name_cpu)
         else:
             name_buffer = None
         _print_tensor_kernel(x, name_buffer, print_ptr)
