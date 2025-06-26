@@ -58,7 +58,7 @@ __global__ void PrintFloatTensor2D(float_t *__restrict__ x,
                                    const char* name_ptr, const bool print_ptr, const bool print_shape) {
   PrintCommon(x, name_ptr, print_ptr);
   if (print_shape) {
-    printf("shape=(%d, %d), stride=(%d, %d)", (int) shape_0, , (int) stride_0);
+    printf("shape=(%d, %d), stride=(%d, %d)", (int) shape_0, (int) shape_1, (int) stride_0, (int) stride_1);
   }
   for (size_t i = 0; i < n; ++i) {
     printf("%.4f%c ",
@@ -73,6 +73,9 @@ __global__ void PrintIntTensor2D(int_t *__restrict__ x, const size_t shape_0,
                                  const size_t stride_1, const size_t stride_0,
                                  const size_t n, const char* name_ptr, const bool print_ptr, const bool print_shape) {
   PrintCommon(x, name_ptr, print_ptr);
+  if (print_shape) {
+    printf("shape=(%d, %d), stride=(%d, %d)", (int) shape_0, (int) shape_1, (int) stride_0, (int) stride_1);
+  }
   for (size_t i = 0; i < n; ++i) {
     printf("%lld%c ",
            int64_t(x[(i / shape_0) * stride_1 + (i % shape_0) * stride_0]),
@@ -88,6 +91,10 @@ __global__ void PrintFloatTensor3D(float_t *__restrict__ x,
                                    const size_t stride_0, const size_t n,
                                    const char* name_ptr, const bool print_ptr, const bool print_shape) {
   PrintCommon(x, name_ptr, print_ptr);
+  if (print_shape) {
+    printf("shape=(%d, %d, %d), stride=(%d, %d, %d)",
+        (int) shape_0, (int) shape_1, (int) shape_2, (int) stride_0, (int) stride_1, (int) stride_2);
+  }
   for (size_t i = 0; i < n; ++i) {
     printf("%.4f%c ", float(x[(i / shape_0 / shape_1) * stride_2 +
                              ((i / shape_0) % shape_1) * stride_1 +
@@ -104,6 +111,10 @@ __global__ void PrintIntTensor3D(int_t *__restrict__ x, const size_t shape_1,
                                  const size_t n, const char* name_ptr,
                                  const bool print_ptr, const bool print_shape) {
   PrintCommon(x, name_ptr, print_ptr);
+  if (print_shape) {
+    printf("shape=(%d, %d, %d), stride=(%d, %d, %d)",
+        (int) shape_0, (int) shape_1, (int) shape_2, (int) stride_0, (int) stride_1, (int) stride_2);
+  }
   for (size_t i = 0; i < n; ++i) {
     printf("%lld%c ", int64_t(x[(i / shape_0 / shape_1) * stride_2 +
                                ((i / shape_0) % shape_1) * stride_1 +
