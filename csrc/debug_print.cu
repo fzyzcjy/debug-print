@@ -31,7 +31,7 @@ __device__ void PrintElem(scalar_t value) {
     } else if constexpr (std::is_integral<scalar_t>::value) {
       printf("%lld, ", static_cast<long long>(value));
     } else {
-      printf("?, ");
+      static_assert(false, "unsupported scalar_t type");
     }
 }
 
