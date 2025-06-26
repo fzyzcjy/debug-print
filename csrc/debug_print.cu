@@ -52,8 +52,9 @@ __global__ void PrintFloatTensor2D(float_t *__restrict__ x,
                                    const char* name_ptr, const bool print_ptr) {
   PrintCommon(x, name_ptr, print_ptr);
   for (size_t i = 0; i < n; ++i) {
-    printf("%.4f, ",
-           float(x[(i / shape_0) * stride_1 + (i % shape_0) * stride_0]));
+    printf("%.4f%c ",
+           float(x[(i / shape_0) * stride_1 + (i % shape_0) * stride_0]),
+           (i % shape_0 == 0) ? ";" : ",");
   }
   printf("\n");
 }
@@ -64,8 +65,9 @@ __global__ void PrintIntTensor2D(int_t *__restrict__ x, const size_t shape_0,
                                  const size_t n, const char* name_ptr, const bool print_ptr) {
   PrintCommon(x, name_ptr, print_ptr);
   for (size_t i = 0; i < n; ++i) {
-    printf("%lld, ",
-           int64_t(x[(i / shape_0) * stride_1 + (i % shape_0) * stride_0]));
+    printf("%lld%c ",
+           int64_t(x[(i / shape_0) * stride_1 + (i % shape_0) * stride_0]),
+           (i % shape_0 == 0) ? ";" : ",");
   }
   printf("\n");
 }
@@ -78,9 +80,10 @@ __global__ void PrintFloatTensor3D(float_t *__restrict__ x,
                                    const char* name_ptr, const bool print_ptr) {
   PrintCommon(x, name_ptr, print_ptr);
   for (size_t i = 0; i < n; ++i) {
-    printf("%.4f, ", float(x[(i / shape_0 / shape_1) * stride_2 +
+    printf("%.4f%c ", float(x[(i / shape_0 / shape_1) * stride_2 +
                              ((i / shape_0) % shape_1) * stride_1 +
-                             (i % shape_0) * stride_0]));
+                             (i % shape_0) * stride_0]),
+           ((i % (shape_0 * shape_1) == 0) || (i % shape_0 == 0)) ? ";" : ",");
   }
   printf("\n");
 }
@@ -92,9 +95,10 @@ __global__ void PrintIntTensor3D(int_t *__restrict__ x, const size_t shape_1,
                                  const size_t n, const char* name_ptr, const bool print_ptr) {
   PrintCommon(x, name_ptr, print_ptr);
   for (size_t i = 0; i < n; ++i) {
-    printf("%lld, ", int64_t(x[(i / shape_0 / shape_1) * stride_2 +
+    printf("%lld%c ", int64_t(x[(i / shape_0 / shape_1) * stride_2 +
                                ((i / shape_0) % shape_1) * stride_1 +
-                               (i % shape_0) * stride_0]));
+                               (i % shape_0) * stride_0]),
+           ((i % (shape_0 * shape_1) == 0) || (i % shape_0 == 0)) ? ";" : ",");
   }
   printf("\n");
 }
