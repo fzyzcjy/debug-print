@@ -32,6 +32,8 @@ with torch.cuda.graph(g, stream=s):
     z2 = z1 @ y
     debug_print.print_tensor(z2, name="This is name for z2")
 
+debug_print.post_initialize()
+
 x.copy_(torch.randn(2, 2))
 y.copy_(torch.ones(2, 2))
 print("start replay...")
