@@ -102,12 +102,12 @@ __global__ void PrintIntTensor3D(int_t *__restrict__ x, const size_t shape_1,
   printf("\n");
 }
 
-void PrintTensor(torch::Tensor x, std::optional<torch::Tensor> name, bool print_ptr) {
+void PrintTensor(torch::Tensor x, std::optional<torch::Tensor> name_buffer, bool print_ptr) {
   cudaStream_t stream = c10::cuda::getCurrentCUDAStream(x.device().index());
   TORCH_CHECK(x.is_cuda(), "The input tensor should be a CUDA tensor");
 
-  const char* name_ptr = name.has_value() ? name->data_ptr() : nullptr;
-  const int name_len = name.has_value() ? name->numel() : 0;
+  const char* name_ptr = name_buffer.has_value() ? name_buffer->data_ptr() : nullptr;
+  const int name_len = name_buffer.has_value() ? name_buffer->numel() : 0;
 
   if (x.is_floating_point()) {
     if (x.dim() == 1) {
