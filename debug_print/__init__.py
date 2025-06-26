@@ -28,7 +28,8 @@ class _DebugPrinter:
         if len(name) > 0:
             name_bytes = name.encode("utf-8")
             name_buffer = self._buffers[x.device.index].allocate(len(name_bytes) + 1)
-            tmp = torch.tensor(list(name_bytes) + [0], dtype=torch.uint8, device="cpu").to(name_buffer.device)
+            tmp = torch.tensor(list(name_bytes) + [0], dtype=torch.uint8, device="cpu")
+            tmp = tmp.to(name_buffer.device)
             name_buffer.copy_(tmp)
         else:
             name_buffer = None
