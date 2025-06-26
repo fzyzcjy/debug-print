@@ -103,7 +103,7 @@ void PrintTensor(torch::Tensor x, std::optional<torch::Tensor> name_buffer, bool
   cudaStream_t stream = c10::cuda::getCurrentCUDAStream(x.device().index());
   TORCH_CHECK(x.is_cuda(), "The input tensor should be a CUDA tensor");
 
-  const char* name_ptr = name_buffer.has_value() ? name_buffer->data_ptr<char>() : nullptr;
+  const char* name_ptr = name_buffer.has_value() ? reinterpret_cast<char*>(name_buffer->data_ptr<uint8_t>()) : nullptr;
 
   if (x.is_floating_point()) {
     if (x.dim() == 1) {
