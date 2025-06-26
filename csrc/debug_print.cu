@@ -17,10 +17,10 @@
 
 __device__ void PrintCommon(void* x, const char* name_ptr, const bool print_ptr) {
   if (name_ptr != nullptr) {
-    printf("name: %s\n", name_ptr);
+    printf("name=%s, ", name_ptr);
   }
   if (print_ptr) {
-    printf("addr: %lld\n", x);
+    printf("addr=%lld, ", x);
   }
 }
 
@@ -58,12 +58,11 @@ __global__ void PrintTensor1D(
   if (print_shape) {
     printf("shape=(%d), stride=(%d)", (int) shape_0, (int) stride_0);
   }
-  printf("[");
+  printf("\n[");
   for (size_t index_0 = 0; index_0 < shape_0; ++index_0) {
     PrintElem(x[index_0 * stride_0]);
   }
-  printf("]");
-  printf("\n");
+  printf("]\n");
 }
 
 template <typename float_t>
@@ -77,7 +76,7 @@ __global__ void PrintTensor2D(
   if (print_shape) {
     printf("shape=(%d, %d), stride=(%d, %d)", (int) shape_0, (int) shape_1, (int) stride_0, (int) stride_1);
   }
-  printf("[");
+  printf("\n[");
   for (size_t index_0 = 0; index_0 < shape_0; ++index_0) {
     printf("[");
     for (size_t index_1 = 0; index_1 < shape_1; ++index_1) {
@@ -85,8 +84,7 @@ __global__ void PrintTensor2D(
     }
     printf("], ");
   }
-  printf("]");
-  printf("\n");
+  printf("]\n");
 }
 
 template <typename float_t>
@@ -100,7 +98,7 @@ __global__ void PrintTensor3D(
   if (print_shape) {
     printf("shape=(%d, %d, %d), stride=(%d, %d, %d)", (int) shape_0, (int) shape_1, (int) shape_2, (int) stride_0, (int) stride_1, (int) stride_2);
   }
-  printf("[");
+  printf("\n[");
   for (size_t index_0 = 0; index_0 < shape_0; ++index_0) {
     printf("[");
     for (size_t index_1 = 0; index_1 < shape_1; ++index_1) {
@@ -112,8 +110,7 @@ __global__ void PrintTensor3D(
     }
     printf("], ");
   }
-  printf("]");
-  printf("\n");
+  printf("]\n");
 }
 
 void PrintTensor(torch::Tensor x, std::optional<torch::Tensor> name_buffer, bool print_ptr, bool print_shape) {
