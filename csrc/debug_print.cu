@@ -113,6 +113,36 @@ __global__ void PrintTensor3D(
   printf("]\n");
 }
 
+template <typename float_t>
+__global__ void PrintTensor4D(
+    float_t *__restrict__ x,
+    const size_t shape_0, const size_t shape_1, const size_t shape_2, const size_t shape_3,
+    const size_t stride_0, const size_t stride_1, const size_t stride_2, const size_t stride_3,
+    const char* name_ptr, const bool print_ptr, const bool print_shape
+) {
+  PrintCommon(x, name_ptr, print_ptr);
+  if (print_shape) {
+    printf("shape=(%d, %d, %d, %d), stride=(%d, %d, %d, %d)", (int) shape_0, (int) shape_1, (int) shape_2, (int) shape_3, (int) stride_0, (int) stride_1, (int) stride_2, (int) stride_3);
+  }
+  printf("\n[");
+  for (size_t index_0 = 0; index_0 < shape_0; ++index_0) {
+    printf("[");
+    for (size_t index_1 = 0; index_1 < shape_1; ++index_1) {
+      printf("[");
+      for (size_t index_2 = 0; index_2 < shape_2; ++index_2) {
+        printf("[");
+        for (size_t index_3 = 0; index_3 < shape_3; ++index_3) {
+          PrintElem(x[index_0 * stride_0 + index_1 * stride_1 + index_2 * stride_2 + index_3 * stride_3]);
+        }
+        printf("], ");
+      }
+      printf("], ");
+    }
+    printf("], ");
+  }
+  printf("]\n");
+}
+
 void PrintTensor(torch::Tensor x, std::optional<torch::Tensor> name_buffer, bool print_ptr, bool print_shape) {
   cudaStream_t stream = c10::cuda::getCurrentCUDAStream(x.device().index());
   TORCH_CHECK(x.is_cuda(), "The input tensor should be a CUDA tensor");
@@ -147,6 +177,15 @@ void PrintTensor(torch::Tensor x, std::optional<torch::Tensor> name_buffer, bool
                 name_ptr, print_ptr, print_shape
             );
           }));
+    } else if (x.dim() == 4) {
+      AT_DISPATCH_FLOATING_AND_REDUCED_FLOATING_TYPES(
+          x.scalar_type(), "PrintTensor4D", ([&] {
+            PrintTensor4D<<<1, 1, 0, stream>>>(
+                x.data_ptr<scalar_t>(),
+                x.size(0), x.size(1), x.size(2), x.size(3), x.stride(0), x.stride(1), x.stride(2), x.stride(3),
+                name_ptr, print_ptr, print_shape
+            );
+          }));
     } else {
       // NOTE(Zihao): I'm just too lazy to do this, codegen for higher
       // dimensions should be a better idea
@@ -178,6 +217,14 @@ void PrintTensor(torch::Tensor x, std::optional<torch::Tensor> name_buffer, bool
        PrintTensor3D<<<1, 1, 0, stream>>>(
                 x.data_ptr<scalar_t>(),
                 x.size(0), x.size(1), x.size(2), x.stride(0), x.stride(1), x.stride(2),
+                name_ptr, print_ptr, print_shape
+            );
+     }));
+    } else if (x.dim() == 4) {
+      AT_DISPATCH_INTEGRAL_TYPES(x.scalar_type(), "PrintTensor4D", ([&] {
+       PrintTensor4D<<<1, 1, 0, stream>>>(
+                x.data_ptr<scalar_t>(),
+                x.size(0), x.size(1), x.size(2), x.size(3), x.stride(0), x.stride(1), x.stride(2), x.stride(3),
                 name_ptr, print_ptr, print_shape
             );
      }));

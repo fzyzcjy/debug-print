@@ -22,6 +22,14 @@ debug_print.print_tensor(torch.tensor([[1, 2, 3], [3, 4, 5]], dtype=torch.int32,
 debug_print.print_tensor(
     torch.tensor([[[1, 2, 3], [3, 4, 5]], [[10, 20, 30], [30, 40, 50]]], dtype=torch.int32, device="cuda:0"),
     name="for 3D", print_shape=True, print_ptr=True)
+debug_print.print_tensor(
+    torch.tensor(
+        [
+            [[[1, 2, 3], [3, 4, 5]], [[10, 20, 30], [30, 40, 50]]],
+            [[[-1, -2, -3], [-3, -4, -5]], [[-10, -20, -30], [-30, -40, -50]]],
+        ],
+        dtype=torch.int32, device="cuda:0"),
+    name="for 4D", print_shape=True, print_ptr=True)
 
 print("start warmup...")
 s = torch.cuda.Stream()
