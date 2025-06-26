@@ -44,7 +44,7 @@ __global__ void PrintTensor1D(
 ) {
   PrintCommon(x, name_ptr, print_ptr);
   if (print_shape) {
-    printf("shape=(%d), stride=(%d)", (int) n, (int) stride_0);
+    printf("shape=(%d), stride=(%d)", (int) shape_0, (int) stride_0);
   }
   for (size_t index_0 = 0; index_0 < shape_0; ++index_0) {
     PrintElem(x[index_0 * stride_0]);
@@ -53,74 +53,44 @@ __global__ void PrintTensor1D(
 }
 
 template <typename float_t>
-__global__ void PrintFloatTensor2D(float_t *__restrict__ x,
-                                   const size_t shape_0, const size_t stride_1,
-                                   const size_t stride_0, const size_t n,
-                                   const char* name_ptr, const bool print_ptr, const bool print_shape) {
+__global__ void PrintTensor2D(
+    float_t *__restrict__ x,
+    const size_t shape_0, const size_t shape_1,
+    const size_t stride_0, const size_t stride_1,
+    const char* name_ptr, const bool print_ptr, const bool print_shape
+) {
   PrintCommon(x, name_ptr, print_ptr);
   if (print_shape) {
     printf("shape=(%d, %d), stride=(%d, %d)", (int) shape_0, (int) shape_1, (int) stride_0, (int) stride_1);
   }
-  for (size_t i = 0; i < n; ++i) {
-    printf("%.4f%c ",
-           float(x[(i / shape_0) * stride_1 + (i % shape_0) * stride_0]),
-           (i % shape_0 == 0) ? ";" : ",");
-  }
-  printf("\n");
-}
-
-template <typename int_t>
-__global__ void PrintIntTensor2D(int_t *__restrict__ x, const size_t shape_0,
-                                 const size_t stride_1, const size_t stride_0,
-                                 const size_t n, const char* name_ptr, const bool print_ptr, const bool print_shape) {
-  PrintCommon(x, name_ptr, print_ptr);
-  if (print_shape) {
-    printf("shape=(%d, %d), stride=(%d, %d)", (int) shape_0, (int) shape_1, (int) stride_0, (int) stride_1);
-  }
-  for (size_t i = 0; i < n; ++i) {
-    printf("%lld%c ",
-           int64_t(x[(i / shape_0) * stride_1 + (i % shape_0) * stride_0]),
-           (i % shape_0 == 0) ? ";" : ",");
+  for (size_t index_0 = 0; index_0 < shape_0; ++index_0) {
+    for (size_t index_1 = 0; index_1 < shape_1; ++index_1) {
+      PrintElem(x[index_0 * stride_0 + index_1 * stride_1]);
+    }
+    printf("; ");
   }
   printf("\n");
 }
 
 template <typename float_t>
-__global__ void PrintFloatTensor3D(float_t *__restrict__ x,
-                                   const size_t shape_1, const size_t shape_0,
-                                   const size_t stride_2, const size_t stride_1,
-                                   const size_t stride_0, const size_t n,
-                                   const char* name_ptr, const bool print_ptr, const bool print_shape) {
+__global__ void PrintTensor3D(
+    float_t *__restrict__ x,
+    const size_t shape_0, const size_t shape_1, const size_t shape_2,
+    const size_t stride_0, const size_t stride_1, const size_t stride_2,
+    const char* name_ptr, const bool print_ptr, const bool print_shape
+) {
   PrintCommon(x, name_ptr, print_ptr);
   if (print_shape) {
-    printf("shape=(%d, %d, %d), stride=(%d, %d, %d)",
-        (int) shape_0, (int) shape_1, (int) shape_2, (int) stride_0, (int) stride_1, (int) stride_2);
+    printf("shape=(%d, %d, %d), stride=(%d, %d, %d)", (int) shape_0, (int) shape_1, (int) shape_2, (int) stride_0, (int) stride_1, (int) stride_2);
   }
-  for (size_t i = 0; i < n; ++i) {
-    printf("%.4f%c ", float(x[(i / shape_0 / shape_1) * stride_2 +
-                             ((i / shape_0) % shape_1) * stride_1 +
-                             (i % shape_0) * stride_0]),
-           ((i % (shape_0 * shape_1) == 0) || (i % shape_0 == 0)) ? ";" : ",");
-  }
-  printf("\n");
-}
-
-template <typename int_t>
-__global__ void PrintIntTensor3D(int_t *__restrict__ x, const size_t shape_1,
-                                 const size_t shape_0, const size_t stride_2,
-                                 const size_t stride_1, const size_t stride_0,
-                                 const size_t n, const char* name_ptr,
-                                 const bool print_ptr, const bool print_shape) {
-  PrintCommon(x, name_ptr, print_ptr);
-  if (print_shape) {
-    printf("shape=(%d, %d, %d), stride=(%d, %d, %d)",
-        (int) shape_0, (int) shape_1, (int) shape_2, (int) stride_0, (int) stride_1, (int) stride_2);
-  }
-  for (size_t i = 0; i < n; ++i) {
-    printf("%lld%c ", int64_t(x[(i / shape_0 / shape_1) * stride_2 +
-                               ((i / shape_0) % shape_1) * stride_1 +
-                               (i % shape_0) * stride_0]),
-           ((i % (shape_0 * shape_1) == 0) || (i % shape_0 == 0)) ? ";" : ",");
+  for (size_t index_0 = 0; index_0 < shape_0; ++index_0) {
+    for (size_t index_1 = 0; index_1 < shape_1; ++index_1) {
+      for (size_t index_2 = 0; index_2 < shape_2; ++index_2) {
+        PrintElem(x[index_0 * stride_0 + index_1 * stride_1]);
+      }
+      printf("; ");
+    }
+    printf("; ");
   }
   printf("\n");
 }
