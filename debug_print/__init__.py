@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Dict, Optional
+from typing import Dict, Optional, List
 
 import torch
 from ._kernels import print_tensor as _print_tensor_kernel
@@ -33,16 +33,20 @@ class _DebugPrinter:
             device_index: _Buffer(device_index=device_index)
             for device_index in range(torch.cuda.device_count())
         }
+        self._pending_copy_tasks: List[_CopyTask] = []
 
     def __call__(self, x: torch.Tensor, name: str = "", print_ptr: bool = False):
-        if len(name) > 0:
-            name_bytes = name.encode("utf-8")
-            name_buffer_gpu = self._buffers[x.device.index].allocate(len(name_bytes) + 1)
-            name_cpu = torch.tensor(list(name_bytes) + [0], dtype=torch.uint8, device="cpu")
-            copy_task = _CopyTask(src=name_cpu, dst=name_buffer_gpu)
-        else:
-            name_buffer_gpu = None
+        name_buffer_gpu = self._compute_name_buffer_gpu(name=name)
         _print_tensor_kernel(x, name_buffer_gpu, print_ptr)
+
+    def _compute_name_buffer_gpu(self, name: str):
+        if len(name) == 0:
+            return None
+
+        name_bytes = name.encode("utf-8")
+        name_buffer_gpu = self._buffers[x.device.index].allocate(len(name_bytes) + 1)
+        name_cpu = torch.tensor(list(name_bytes) + [0], dtype=torch.uint8, device="cpu")
+        copy_task = _CopyTask(src=name_cpu, dst=name_buffer_gpu)
 
 
 _printer: Optional[_DebugPrinter] = None
