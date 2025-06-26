@@ -40,9 +40,9 @@ class _DebugPrinter:
             copy_task.execute()
         self._pending_copy_tasks.clear()
 
-    def __call__(self, x: torch.Tensor, name: str = "", print_ptr: bool = False):
+    def __call__(self, x: torch.Tensor, name: str, print_ptr: bool, print_shape: bool):
         name_buffer_gpu = self._compute_name_buffer_gpu(name=name, device_index=x.device.index)
-        _print_tensor_kernel(x, name_buffer_gpu, print_ptr)
+        _print_tensor_kernel(x, name_buffer_gpu, print_ptr, print_shape)
 
     def _compute_name_buffer_gpu(self, name: str, device_index: int):
         if len(name) == 0:
@@ -74,5 +74,5 @@ def post_initialize():
     _printer.post_initialize()
 
 
-def print_tensor(x: torch.Tensor, name: str = "", print_ptr: bool = False):
-    _printer(x=x, name=name, print_ptr=print_ptr)
+def print_tensor(x: torch.Tensor, name: str = "", print_ptr: bool = False, print_shape: bool = False):
+    _printer(x=x, name=name, print_ptr=print_ptr, print_shape=print_shape)

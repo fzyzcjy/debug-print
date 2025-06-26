@@ -103,7 +103,7 @@ __global__ void PrintIntTensor3D(int_t *__restrict__ x, const size_t shape_1,
   printf("\n");
 }
 
-void PrintTensor(torch::Tensor x, std::optional<torch::Tensor> name_buffer, bool print_ptr) {
+void PrintTensor(torch::Tensor x, std::optional<torch::Tensor> name_buffer, bool print_ptr, bool print_shape) {
   cudaStream_t stream = c10::cuda::getCurrentCUDAStream(x.device().index());
   TORCH_CHECK(x.is_cuda(), "The input tensor should be a CUDA tensor");
 
